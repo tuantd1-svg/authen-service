@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include
+            resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <property name="basePath" value="/data/logs/auth"/>
+    <property name="fileName" value="auth-service"/>
+
+    <property name="STDOUT_LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{1}){cyan} %clr(:){faint} %clr([%X{X-B3-TraceId}] [%X{clientIP}] [%X{httpMethod}] [%X{sourceType}] [%X{username}] [%X{operatorName}] [%X{stepName}] [%X{durationTime}] >>>>>>>>>>>>){magenta} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%15.15t] %-40.40logger{1} : [%X{X-B3-TraceId}] [%X{clientIP}] [%X{httpMethod}] [%X{sourceType}] [%X{username}] [%X{operatorName}] [%X{stepName}] [%X{durationTime}] >>>>>>>>>>>> %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+
+<!--    <appender name="STDOUT"-->
+<!--              class="ch.qos.logback.core.ConsoleAppender">-->
+<!--        <layout class="ch.qos.logback.classic.PatternLayout">-->
+<!--            <Pattern>-->
+<!--                ${STDOUT_LOG_PATTERN}-->
+<!--            </Pattern>-->
+<!--        </layout>-->
+<!--    </appender>-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.example.loggerapi.masking.MaskingPatternLayout">
+                <maskPattern>\"password\"\s*:\s*\"(.*?)\"</maskPattern> <!-- SSN JSON pattern -->
+                <maskPattern>\"credential\"\s*:\s*\"(.*?)\"</maskPattern> <!-- SSN JSON pattern -->
+                <Pattern>
+                    ${STDOUT_LOG_PATTERN}
+                </Pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <appender name="FILE-AUDIT"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${basePath}/${fileName}.log</file>
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                ${FILE_LOG_PATTERN}
+            </Pattern>
+        </encoder>
+
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${basePath}/archived/${fileName}/%d{yyyy/MM/dd}/${fileName}.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <springProfile name="!live">
+        <root level="info">
+            <appender-ref ref="FILE-AUDIT"/>
+            <appender-ref ref="STDOUT"/>
+        </root>
+
+        <logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <appender-ref ref="FILE-AUDIT"/>
+            <appender-ref ref="STDOUT"/>
+        </logger>
+    </springProfile>
+</configuration>
