@@ -38,7 +38,7 @@ public class CommonAspect {
         RequestMapping mapping = signature.getMethod().getAnnotation(RequestMapping.class);
         Map<String, Object> parameters = getParameters(joinPoint);
         try {
-            LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(), mapping.method()[0].name(),"handle_in" ,mapper.writeValueAsString(parameters));
+            LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(),mapping.method()[0].name(),"handle_in" ,mapper.writeValueAsString(parameters));
         } catch (JsonProcessingException e) {
             logger.error("Error while converting", e);
         }finally {
@@ -62,15 +62,13 @@ public class CommonAspect {
         LoggerUtils2.error(joinPoint.getSignature().getDeclaringType(), joinPoint.getSignature().getName(),"exception", e.getCause() != null ? e.getMessage() : "NULL");
     }
     @Around(" pointcut()")
-    public Object invoke(ProceedingJoinPoint joinPoint) throws Throwable {
+    public void invoke(ProceedingJoinPoint joinPoint) throws Throwable {
         final String joinPoints = Arrays.toString(joinPoint.getArgs());
         if (joinPoints != null) {
             LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(),  joinPoint.getSignature().getName(),"send",mapper.writeValueAsString(joinPoints));
         }
         final Object result = joinPoint.proceed();;
         LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(),  joinPoint.getSignature().getName(),"received",mapper.writeValueAsString(result.toString()));
-
-        return result;
     }
     private Map<String, Object> getParameters(JoinPoint joinPoint) {
         CodeSignature signature = (CodeSignature) joinPoint.getSignature();

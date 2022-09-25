@@ -10,6 +10,7 @@ import com.example.commonapi.service.ReferenceService;
 import com.example.commonapi.service.SequenceGeneratorService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -21,7 +22,8 @@ public class UsersMapper {
 
     @Autowired
     private ModelMapper modelMapper;
-
+    @Autowired
+    private PasswordEncoder encoder;
     @Autowired
     private ReferenceService referenceService;
     public Users map(User user)
@@ -32,7 +34,7 @@ public class UsersMapper {
                 .ref(referenceService.newReference())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .password(user.getPassword())
+                .password(encoder.encode(user.getPassword()))
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .mobileNo(user.getMobileNo())

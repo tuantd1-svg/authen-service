@@ -1,5 +1,6 @@
 package com.example.authenservice.service;
 
+import com.example.authenservice.respository.dto.UserAuth;
 import com.example.authenservice.respository.dto.Users;
 import com.example.commonapi.parameter.enumable.ERole;
 import lombok.Builder;
@@ -26,12 +27,18 @@ public class UserDetailServiceImp implements UserDetails {
 
     private String password;
 
+    private boolean isActive;
+
+    private boolean isDelete;
+
+    private boolean isLocked;
+
 
     private Collection<? extends GrantedAuthority> authorities;
-    public static UserDetailServiceImp builder(Users users, Set<ERole> eRoles)
+    public static UserDetailServiceImp builder(Users users, Set<ERole> eRoles, UserAuth auth)
     {
         List<GrantedAuthority> authorities = eRoles.stream().map(roles -> new SimpleGrantedAuthority(roles.name())).collect(Collectors.toList());
-        return new UserDetailServiceImp(users.getId(), users.getUsername(),users.getEmail(),users.getPassword(),authorities);
+        return new UserDetailServiceImp(users.getId(), users.getUsername(),users.getEmail(),users.getPassword(), auth.getIsActive(), auth.getIsDelete(),auth.getIsLocked(),authorities);
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
