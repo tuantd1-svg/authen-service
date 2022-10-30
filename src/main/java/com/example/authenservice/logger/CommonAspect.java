@@ -61,15 +61,7 @@ public class CommonAspect {
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         LoggerUtils2.error(joinPoint.getSignature().getDeclaringType(), joinPoint.getSignature().getName(),"exception", e.getCause() != null ? e.getMessage() : "NULL");
     }
-    @Around(" pointcut()")
-    public void invoke(ProceedingJoinPoint joinPoint) throws Throwable {
-        final String joinPoints = Arrays.toString(joinPoint.getArgs());
-        if (joinPoints != null) {
-            LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(),  joinPoint.getSignature().getName(),"send",mapper.writeValueAsString(joinPoints));
-        }
-        final Object result = joinPoint.proceed();;
-        LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(),  joinPoint.getSignature().getName(),"received",mapper.writeValueAsString(result.toString()));
-    }
+
     private Map<String, Object> getParameters(JoinPoint joinPoint) {
         CodeSignature signature = (CodeSignature) joinPoint.getSignature();
 

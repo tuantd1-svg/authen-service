@@ -115,7 +115,6 @@ public class LoggingFilter extends GenericFilterBean {
                 if (message.length() > MAX_CONTENT_LENGTH_REQUEST_LOG) {
                     message = message.substring(0, MAX_CONTENT_LENGTH_REQUEST_LOG);
                 }
-//				message = new String(request.getAllByteInRequest(), 0, MAX_CONTENT_LENGTH_REQUEST_LOG);
             }
             else {
                 message = new String(request.getAllByteInRequest());

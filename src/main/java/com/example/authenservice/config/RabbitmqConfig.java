@@ -80,11 +80,35 @@ public class RabbitmqConfig {
     }
 
     @Bean
+    Queue queueCreateUpdateCategory(){return new Queue(QueueConfig.Q_CREATE_CATEGORY,false);}
+    @Bean
     Binding bindingChangePassUser() {
         return BindingBuilder.bind(queueChangePassUser()).to(exChangeUserShop()).with(QueueConfig.R_CHANGE_PASSWORD_USER);
     }
+    @Bean
+    Binding bindingCreateUpdateCategory()
+    {
+        return BindingBuilder.bind(queueCreateUpdateCategory()).to(exChangeUserShop()).with(QueueConfig.R_CREATE_CATEGORY);
+    }
 
+    @Bean
+    Queue queueCreateUpdateProduct() {
+        return new Queue(QueueConfig.Q_CREATE_PRODUCT, false);
+    }
 
+    @Bean
+    Binding bindingCreateUpdateProduct() {
+        return BindingBuilder.bind(queueCreateUpdateProduct()).to(exChangeUserShop()).with(QueueConfig.R_CREATE_PRODUCT);
+    }
+    @Bean
+    Queue queueGetOrder() {
+        return new Queue(QueueConfig.Q_GET_ORDER_ADMIN, false);
+    }
+
+    @Bean
+    Binding bindingGetOrder() {
+        return BindingBuilder.bind(queueGetOrder()).to(exChangeUserShop()).with(QueueConfig.R_GET_ORDER_ADMIN);
+    }
     @Bean
     public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();

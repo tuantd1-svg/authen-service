@@ -39,13 +39,4 @@ public class Users extends AbstractTimestampEntity {
     private String address;
     @LastModifiedDate
     private Date isLoginSuccess;
-
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-//    private LocalDateTime createDate;
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-//    private LocalDateTime updateDate;
 }
