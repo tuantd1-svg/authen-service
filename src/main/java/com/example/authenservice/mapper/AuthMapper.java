@@ -15,6 +15,7 @@ public class AuthMapper {
         UserAuth userAuth = new UserAuth();
         userAuth.setId(service.generateSequence(UserAuth.SEQUENCE_NAME));
         userAuth.setRef(ref);
+        userAuth.setIsResetPassword(false);
         switch (eUserAuth) {
             case ACTIVE:
                 userAuth.setIsActive(true);

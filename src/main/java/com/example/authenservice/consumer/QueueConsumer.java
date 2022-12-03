@@ -23,7 +23,7 @@ public class QueueConsumer {
     private UserService userService;
 
     @RabbitHandler
-    @RabbitListener(queues = QueueConfig.Q_CREATE_SHOP_USER)
+    @RabbitListener(queues = QueueConfig.Q_CREATE_USER)
     public ResultMessage<RegisterUser > addUserAuthentication(@Valid @Payload User user) {
         try {
             RegisterUser registerUser = userService.addUser(user);

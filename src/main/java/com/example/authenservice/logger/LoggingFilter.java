@@ -62,7 +62,6 @@ public class LoggingFilter extends GenericFilterBean {
 
             // write request log
             writeRequestLog(operatorName, requestWrapper, extraParam);
-
             try {
                 chain.doFilter(requestWrapper, responseWrapper);
             } catch (Exception e) {
@@ -132,7 +131,6 @@ public class LoggingFilter extends GenericFilterBean {
         if (response.size() > MAX_CONTENT_LENGTH_RESPONSE_LOG) {
             message = new String(response.getAllByteInReponse());
             if (message.length() > MAX_CONTENT_LENGTH_RESPONSE_LOG) {
-//                message = new String(response.getAllByteInReponse(), 0, MAX_CONTENT_LENGTH_RESPONSE_LOG);
                 message = message.substring(0, MAX_CONTENT_LENGTH_RESPONSE_LOG);
             }
         } else

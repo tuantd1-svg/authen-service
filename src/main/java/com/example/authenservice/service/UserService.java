@@ -37,20 +37,21 @@ public class UserService {
     private UserRolesMapper userRolesMapper;
     @Autowired
     private UserAuthRepository userAuthRepository;
+
     public RegisterUser addUser(User user) {
         Users temp = userRepository.findUsersByUsernameOrEmailOrMobileNo(user.getUsername(), user.getEmail(), user.getMobileNo());
         if (temp == null) {
             Users users = userRepository.save(usersMapper.map(user));
             UserConfig userConfig = userConfigRepository.save(userConfigMapper.map(users.getRef()));
             UserRoles userRoles = userRoleRepository.save(userRolesMapper.map(users.getRef()));
-            UserAuth userAuth = userAuthRepository.save(authMapper.map(EUserAuth.ACTIVE,users.getRef()));
-            return getRegisterUser(users, userConfig, userRoles,userAuth);
+            UserAuth userAuth = userAuthRepository.save(authMapper.map(EUserAuth.ACTIVE, users.getRef()));
+            return getRegisterUser(users, userConfig, userRoles, userAuth);
         } else {
             throw new ResourceExistException("User is exist");
         }
     }
-    private RegisterUser getRegisterUser(Users users,UserConfig userConfig ,UserRoles userRoles,UserAuth userAuth)
-    {
+
+    private RegisterUser getRegisterUser(Users users, UserConfig userConfig, UserRoles userRoles, UserAuth userAuth) {
         return RegisterUser.builder()
                 .username(users.getUsername())
                 .email(users.getEmail())

@@ -20,7 +20,6 @@ public class JwtUtils {
     public String generateJwtToken(Authentication authentication) {
 
         UserDetailServiceImp userPrincipal = (UserDetailServiceImp) authentication.getPrincipal();
-
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
                 .setIssuedAt(new Date())

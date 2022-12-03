@@ -74,17 +74,9 @@ public class RabbitmqConfig {
         return new DirectExchange(QueueConfig.E_SHOP_USER);
     }
 
-    @Bean
-    Queue queueChangePassUser() {
-        return new Queue(QueueConfig.Q_CHANGE_PASSWORD_USER, false);
-    }
 
     @Bean
     Queue queueCreateUpdateCategory(){return new Queue(QueueConfig.Q_CREATE_CATEGORY,false);}
-    @Bean
-    Binding bindingChangePassUser() {
-        return BindingBuilder.bind(queueChangePassUser()).to(exChangeUserShop()).with(QueueConfig.R_CHANGE_PASSWORD_USER);
-    }
     @Bean
     Binding bindingCreateUpdateCategory()
     {

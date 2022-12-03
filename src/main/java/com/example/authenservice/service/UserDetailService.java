@@ -32,7 +32,7 @@ public class UserDetailService implements org.springframework.security.core.user
         UserAuth auth = userAuthRepository.findUserAuthByRefAndIsActive(users.getRef(), Boolean.TRUE);
         if (auth != null && users != null) {
             Set<ERole> roleSet = userRoleRepository.getUserRolesByRef(users.getRef()).getRole();
-            return UserDetailServiceImp.builder(users, roleSet ,auth);
+            return UserDetailServiceImp.builder(users, roleSet, auth);
         } else throw new UsernameNotFoundException("user not active please contact admin");
 
     }

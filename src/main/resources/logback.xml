@@ -3,7 +3,7 @@
     <include
             resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <property name="basePath" value="/data/logs/auth"/>
+    <property name="basePath" value="../../data/logs/auth"/>
     <property name="fileName" value="auth-service"/>
 
     <property name="STDOUT_LOG_PATTERN"

@@ -27,23 +27,27 @@ public class UserDetailServiceImp implements UserDetails {
 
     private String password;
 
-    private boolean isActive;
+    private Boolean isActive;
 
-    private boolean isDelete;
+    private Boolean isDelete;
 
-    private boolean isLocked;
+    private Boolean isLocked;
+
+    private Boolean isResetPassword;
 
 
     private Collection<? extends GrantedAuthority> authorities;
-    public static UserDetailServiceImp builder(Users users, Set<ERole> eRoles, UserAuth auth)
-    {
+
+    public static UserDetailServiceImp builder(Users users, Set<ERole> eRoles, UserAuth auth) {
         List<GrantedAuthority> authorities = eRoles.stream().map(roles -> new SimpleGrantedAuthority(roles.name())).collect(Collectors.toList());
-        return new UserDetailServiceImp(users.getId(), users.getUsername(),users.getEmail(),users.getPassword(), auth.getIsActive(), auth.getIsDelete(),auth.getIsLocked(),authorities);
+        return new UserDetailServiceImp(users.getId(), users.getUsername(), users.getEmail(), users.getPassword(), auth.getIsActive(), auth.getIsDelete(), auth.getIsLocked(), auth.getIsResetPassword(), authorities);
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
+
     public Long getId() {
         return id;
     }
@@ -51,6 +55,7 @@ public class UserDetailServiceImp implements UserDetails {
     public String getEmail() {
         return email;
     }
+
     @Override
     public String getPassword() {
         return password;

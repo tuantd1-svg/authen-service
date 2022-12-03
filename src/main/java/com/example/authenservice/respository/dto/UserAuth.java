@@ -18,4 +18,5 @@ public class UserAuth extends AbstractTimestampEntity {
     private Boolean isActive;
     private Boolean isLocked;
     private Boolean isDelete;
+    private Boolean isResetPassword;
 }
