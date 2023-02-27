@@ -21,86 +21,18 @@ public class RabbitmqConfig {
 
     @Bean
     DirectExchange exchangeMail() {
-        return new DirectExchange(QueueConfig.E_MAIL_SEND);
+        return new DirectExchange(QueueConfig.E_NOTIFICATION_SEND);
     }
 
     @Bean
     Binding bindingSendMail() {
-        return BindingBuilder.bind(queueSendMail()).to(exchangeMail()).with(QueueConfig.R_MAIL_SEND);
+        return BindingBuilder.bind(queueSendMail()).to(exchangeMail()).with(QueueConfig.Q_NOTIFICATION_SEND);
     }
     @Bean
     Queue queueSendMail() {
-        return new Queue(QueueConfig.Q_MAIL_SEND, false);
-    }
-    @Bean
-    Queue queueAuthorizeUser() {
-        return new Queue(QueueConfig.Q_AUTHORIZE_USER, false);
+        return new Queue(QueueConfig.Q_NOTIFICATION_SEND, false);
     }
 
-    @Bean
-    Binding bindingAuthorizeUser() {
-        return BindingBuilder.bind(queueAuthorizeUser()).to(exChangeUserShop()).with(QueueConfig.R_AUTHORIZE_USER);
-    }
-    @Bean
-    Queue queueCheckUser() {
-        return new Queue(QueueConfig.Q_CHECK_SHOP_USER, false);
-    }
-
-    @Bean
-    Binding bindingCheckUser() {
-        return BindingBuilder.bind(queueCheckUser()).to(exChangeUserShop()).with(QueueConfig.R_CHECK_SHOP_USER);
-    }
-    @Bean
-    Queue queueCreateUser() {
-        return new Queue(QueueConfig.Q_CREATE_SHOP_USER, false);
-    }
-
-    @Bean
-    Binding bindingCreateUser() {
-        return BindingBuilder.bind(queueCreateUser()).to(exChangeUserShop()).with(QueueConfig.R_CREATE_SHOP_USER);
-    }
-    @Bean
-    Queue queueGetUserShop() {
-        return new Queue(QueueConfig.Q_GET_SHOP_USER, false);
-    }
-
-    @Bean
-    Binding bindingGetUsersShop() {
-        return BindingBuilder.bind(queueGetUserShop()).to(exChangeUserShop()).with(QueueConfig.R_GET_SHOP_USER);
-    }
-
-    @Bean
-    DirectExchange exChangeUserShop() {
-        return new DirectExchange(QueueConfig.E_SHOP_USER);
-    }
-
-
-    @Bean
-    Queue queueCreateUpdateCategory(){return new Queue(QueueConfig.Q_CREATE_CATEGORY,false);}
-    @Bean
-    Binding bindingCreateUpdateCategory()
-    {
-        return BindingBuilder.bind(queueCreateUpdateCategory()).to(exChangeUserShop()).with(QueueConfig.R_CREATE_CATEGORY);
-    }
-
-    @Bean
-    Queue queueCreateUpdateProduct() {
-        return new Queue(QueueConfig.Q_CREATE_PRODUCT, false);
-    }
-
-    @Bean
-    Binding bindingCreateUpdateProduct() {
-        return BindingBuilder.bind(queueCreateUpdateProduct()).to(exChangeUserShop()).with(QueueConfig.R_CREATE_PRODUCT);
-    }
-    @Bean
-    Queue queueGetOrder() {
-        return new Queue(QueueConfig.Q_GET_ORDER_ADMIN, false);
-    }
-
-    @Bean
-    Binding bindingGetOrder() {
-        return BindingBuilder.bind(queueGetOrder()).to(exChangeUserShop()).with(QueueConfig.R_GET_ORDER_ADMIN);
-    }
     @Bean
     public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
