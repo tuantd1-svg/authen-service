@@ -2,10 +2,7 @@ package com.example.authenservice.config;
 
 
 import com.example.queuecommonapi.config.QueueConfig;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -31,6 +28,32 @@ public class RabbitmqConfig {
     @Bean
     Queue queueSendMail() {
         return new Queue(QueueConfig.Q_NOTIFICATION_SEND, false);
+    }
+
+    @Bean
+    DirectExchange exchangeUser() {
+        return new DirectExchange(QueueConfig.E_USER);
+    }
+
+    @Bean
+    Binding bindingCreateUser() {
+        return BindingBuilder.bind(queueCreateUser()).to(exchangeUser()).with(QueueConfig.R_CREATE_USER);
+    }
+    @Bean
+    Queue queueCoreCreateUser() {
+        return new Queue(QueueConfig.Q_CORE_CREATE_USER, false);
+    }
+    @Bean
+    TopicExchange exchangeCoreUser() {
+        return new TopicExchange(QueueConfig.E_CORE_USER);
+    }
+    @Bean
+    Binding bindingCoreCreateUser() {
+        return BindingBuilder.bind(queueCoreCreateUser()).to(exchangeCoreUser()).with(QueueConfig.R_CORE_CREATE_USER);
+    }
+    @Bean
+    Queue queueCreateUser() {
+        return new Queue(QueueConfig.Q_CREATE_USER, false);
     }
 
     @Bean

@@ -2,11 +2,13 @@ package com.example.authenservice.consumer;
 
 
 import com.example.authenservice.service.UserService;
+import com.example.commonapi.anotation.exeption.FailureException;
 import com.example.commonapi.model.RegisterUser;
 import com.example.commonapi.model.ResultMessage;
 import com.example.commonapi.model.User;
 import com.example.commonapi.parameter.enumable.EMessage;
 import com.example.commonapi.parameter.enumable.ETransactionStatus;
+import com.example.commonapi.parameter.enumable.ErrorCode;
 import com.example.queuecommonapi.config.QueueConfig;
 
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -24,15 +26,7 @@ public class QueueConsumer {
 
     @RabbitHandler
     @RabbitListener(queues = QueueConfig.Q_CREATE_USER)
-    public ResultMessage<RegisterUser > addUserAuthentication(@Valid @Payload User user) {
-        try {
-            RegisterUser registerUser = userService.addUser(user);
-            if (registerUser != null)
-                return new ResultMessage(ETransactionStatus.SUCCESS.getStatus(), ETransactionStatus.SUCCESS.getMessage(), true, EMessage.EXECUTE, registerUser);
-            return new ResultMessage(ETransactionStatus.NOT_FOUND.getStatus(), ETransactionStatus.NOT_FOUND.getMessage(), false, EMessage.INTERNAL_ERROR);
-        } catch (Exception e) {
-            return new ResultMessage(ETransactionStatus.PROCESSING_ERROR.getStatus(), ETransactionStatus.PROCESSING_ERROR.getMessage() + " - " + e.getMessage(), false, EMessage.INTERNAL_ERROR);
-        }
+    public ResultMessage<?> addUserAuthentication(@Valid @Payload User user) {
+        return userService.addUser(user);
     }
-
 }

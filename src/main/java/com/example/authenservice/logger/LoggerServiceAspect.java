@@ -8,11 +8,17 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.CodeSignature;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.authenservice.logger.LoggingFilter.X_B3_Trace_ID;
 
 @Aspect
 @Component
@@ -27,11 +33,13 @@ public class LoggerServiceAspect {
     }
     @Around("aroundService()")
     public Object aroundAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        MDC.put(X_B3_Trace_ID,request.getHeader(X_B3_Trace_ID));
         try {
             Map<String, Object> parameters = getParameters(joinPoint);
-            LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(), joinPoint.getSignature().getName(), "handle_in", mapper.writeValueAsString(parameters));
+            LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(), joinPoint.getSignature().getName(), "pre-"+joinPoint.getSignature().getName(), mapper.writeValueAsString(parameters));
             final Object result = joinPoint.proceed();
-            LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(), joinPoint.getSignature().getName(), "handle_out", mapper.writeValueAsString(result));
+            LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(), joinPoint.getSignature().getName(), "post-"+ joinPoint.getSignature().getName(), mapper.writeValueAsString(result));
             return result;
         } catch (Exception e) {
             LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(), joinPoint.getSignature().getName(), "exception", e);

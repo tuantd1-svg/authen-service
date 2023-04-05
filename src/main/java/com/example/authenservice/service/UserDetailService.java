@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -28,12 +29,12 @@ public class UserDetailService implements org.springframework.security.core.user
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users users = userRepository.findUsersByUsername(username, EUserStatus.ACTIVE.getStatus());
-        UserAuth auth = userAuthRepository.findUserAuthByRefAndIsActive(users.getRef(), Boolean.TRUE);
-        if (auth != null && users != null) {
-            Set<ERole> roleSet = userRoleRepository.getUserRolesByRef(users.getRef()).getRole();
-            return UserDetailServiceImp.builder(users, roleSet, auth);
-        } else throw new UsernameNotFoundException("user not active please contact admin");
+        Optional<Users> usersOptional = Optional.ofNullable(userRepository.findUsersByUsername(username, EUserStatus.ACTIVE.getStatus()));
+        Users users = usersOptional.orElseThrow(() -> new UsernameNotFoundException("user not active please contact admin"));
+        Optional<UserAuth> authOptional = Optional.ofNullable(userAuthRepository.findUserAuthByRefAndIsActive(users.getRef(), Boolean.TRUE));
+        UserAuth userAuth = authOptional.orElseThrow(() -> new UsernameNotFoundException("user authentication not active please contact admin"));
 
+        Set<ERole> roleSet = userRoleRepository.getUserRolesByRef(users.getRef()).getRole();
+        return UserDetailServiceImp.builder(users, roleSet, userAuth);
     }
 }

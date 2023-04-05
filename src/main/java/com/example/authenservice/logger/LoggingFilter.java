@@ -15,6 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.plaf.PanelUI;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -25,8 +26,9 @@ import java.util.Map;
 @Component
 public class LoggingFilter extends GenericFilterBean {
     public static final String TRANS_ID_REQUEST = "TRANS_ID";
-    public static final String SPAN_ID_REQUEST = "SPAN_ID";
     public static final String CLIENT_IP = "clientIP";
+
+    public static final String X_B3_Trace_ID ="X-B3-TraceId";
     public static final String HTTP_METHOD = "httpMethod";
     public static final String DURATION_TIME = "durationTime";
     protected static final int MAX_CONTENT_LENGTH_REQUEST_LOG = 1024 * 32; // 32 KB
@@ -45,20 +47,18 @@ public class LoggingFilter extends GenericFilterBean {
             MyHttpServletReponseWrapper responseWrapper = new MyHttpServletReponseWrapper((HttpServletResponse) response);
 
 
-            String traceId = MDC.get("X-B3-TraceId");
-            String spanId = MDC.get("X-B3-SpanId");
+            String traceId = requestWrapper.getHeader(X_B3_Trace_ID);
 
             String operatorName = requestWrapper.getRequestURI();
             String clientIP = request.getRemoteAddr();
             String httpMethod = requestWrapper.getMethod();
 
-            buildMDC(clientIP, httpMethod);
+            buildMDC(clientIP, httpMethod,traceId);
 
             Map<String, String> extraParam = extraParams((HttpServletRequest) request);
 
             // write unique id to servlet request
             requestWrapper.setAttribute(TRANS_ID_REQUEST, traceId);
-            requestWrapper.setAttribute(SPAN_ID_REQUEST, spanId);
 
             // write request log
             writeRequestLog(operatorName, requestWrapper, extraParam);
@@ -90,7 +90,8 @@ public class LoggingFilter extends GenericFilterBean {
         }
     }
 
-    private void buildMDC(String clientIP, String httpMethod) {
+    private void buildMDC(String clientIP, String httpMethod,String traceId) {
+        MDC.put(X_B3_Trace_ID,traceId);
         MDC.put(CLIENT_IP, clientIP);
         MDC.put(HTTP_METHOD, httpMethod);
     }
@@ -99,6 +100,7 @@ public class LoggingFilter extends GenericFilterBean {
         MDC.remove(CLIENT_IP);
         MDC.remove(HTTP_METHOD);
         MDC.remove(DURATION_TIME);
+        MDC.remove(X_B3_Trace_ID);
     }
 
     protected void writeRequestLog(String operatorName, MyHttpServletRequestWrapper request,
