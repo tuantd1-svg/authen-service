@@ -13,17 +13,22 @@ import com.example.commonapi.anotation.exeption.ResourceExistException;
 import com.example.commonapi.model.RegisterUser;
 import com.example.commonapi.model.ResultMessage;
 import com.example.commonapi.model.User;
+import com.example.commonapi.model.UserLogin;
 import com.example.commonapi.parameter.enumable.*;
 import com.example.queuecommonapi.config.QueueConfig;
 import com.example.queuecommonapi.producer.IQueueProducer;
 import com.google.inject.Inject;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import javax.ws.rs.core.MediaType;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,12 +50,16 @@ public class UserService {
     private UserRolesMapper userRolesMapper;
     @Autowired
     private UserAuthRepository userAuthRepository;
-
-
     @Autowired
     private IQueueProducer iQueueProducer;
     @Autowired
     private ICurrentUser iCurrentUser;
+
+    @Value("${url.core-service.baseUrl}")
+    private String url;
+
+    @Autowired
+    private  WebClient.Builder webClientBuilder;
     @Resource
     private FunctionPermissionRepository functionPermissionRepository;
 
@@ -60,12 +69,10 @@ public class UserService {
             if (temp != null) {
                 throw new FailureException(ErrorCode.USER_EXIST.getMessage(), ErrorCode.USER_EXIST);
             }
-
             ResultMessage result = iQueueProducer.blockingStartRPCQueue(QueueConfig.Q_CORE_CREATE_USER, user);
             if (!EMessage.EXECUTE.equals(result.getMessage())) {
                 return result;
             }
-
             Users users = userRepository.save(usersMapper.map(user));
             UserConfig userConfig = userConfigRepository.save(userConfigMapper.map(users.getRef()));
             UserRoles userRoles = userRoleRepository.save(userRolesMapper.map(users.getRef()));
@@ -114,7 +121,6 @@ public class UserService {
                 verifyPermission.setVerifyRole(EPermission.URI_NOT_ROLE);
                 return verifyPermission;
             }
-
             if (roleUser == null || roleUser.isEmpty()) {
                 verifyPermission.setVerifyRole(EPermission.USER_NOT_ROLE);
                 return verifyPermission;
@@ -127,5 +133,9 @@ public class UserService {
             verifyPermission.setVerifyRole(EPermission.ERROR);
         }
         return verifyPermission;
+    }
+
+    public ResultMessage verifyUser(UserLogin userLogin) {
+        return webClientBuilder.baseUrl(url).build().post().uri("/api/verifyUserLogin").body(Mono.just(userLogin), UserLogin.class).retrieve().bodyToMono(ResultMessage.class).block();
     }
 }

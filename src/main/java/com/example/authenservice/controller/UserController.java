@@ -63,6 +63,9 @@ public class UserController {
     @RequestMapping(value = "login", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON, method = RequestMethod.POST)
     public ResultMessage login(@Valid @RequestBody UserLogin userLogin) {
         try {
+            ResultMessage message = userService.verifyUser(userLogin);
+            if(EMessage.EXECUTE != message.getMessage())
+                return message;
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userLogin.getUsername(), userLogin.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);

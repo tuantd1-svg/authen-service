@@ -33,8 +33,6 @@ public class LoggerServiceAspect {
     }
     @Around("aroundService()")
     public Object aroundAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        MDC.put(X_B3_Trace_ID,request.getHeader(X_B3_Trace_ID));
         try {
             Map<String, Object> parameters = getParameters(joinPoint);
             LoggerUtils2.info(joinPoint.getSignature().getDeclaringType(), joinPoint.getSignature().getName(), "pre-"+joinPoint.getSignature().getName(), mapper.writeValueAsString(parameters));
