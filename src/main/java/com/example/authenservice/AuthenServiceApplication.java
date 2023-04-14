@@ -17,6 +17,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -76,5 +80,50 @@ public class AuthenServiceApplication {
     @Bean
     public ReferenceService referenceService() {
         return new ReferenceService();
+    }
+
+    @Bean
+    @Profile({"ws-dev","default"})
+    public static PropertySourcesPlaceholderConfigurer devProperties(){
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
+                = new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new ClassPathResource[ ]
+                { new ClassPathResource( "endpoint/ws-dev.properties" ) };
+        propertySourcesPlaceholderConfigurer.setLocations( resources );
+        propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders( true );
+        return propertySourcesPlaceholderConfigurer;
+    }
+    @Bean
+    @Profile("ws-uat")
+    public static PropertySourcesPlaceholderConfigurer uatProperties(){
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
+                = new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new ClassPathResource[ ]
+                { new ClassPathResource( "endpoint/ws-uat.properties" ) };
+        propertySourcesPlaceholderConfigurer.setLocations( resources );
+        propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders( true );
+        return propertySourcesPlaceholderConfigurer;
+    }
+    @Bean
+    @Profile("ws-uat")
+    public static PropertySourcesPlaceholderConfigurer pilotProperties(){
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
+                = new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new ClassPathResource[ ]
+                { new ClassPathResource( "endpoint/ws-pilot.properties" ) };
+        propertySourcesPlaceholderConfigurer.setLocations( resources );
+        propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders( true );
+        return propertySourcesPlaceholderConfigurer;
+    }
+    @Bean
+    @Profile("ws-pro")
+    public static PropertySourcesPlaceholderConfigurer proProperties(){
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer
+                = new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new ClassPathResource[ ]
+                { new ClassPathResource( "endpoint/ws-production.properties" ) };
+        propertySourcesPlaceholderConfigurer.setLocations( resources );
+        propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders( true );
+        return propertySourcesPlaceholderConfigurer;
     }
 }

@@ -1,9 +1,11 @@
 package com.example.authenservice.controller;
 
+import com.example.authenservice.model.ApiUser;
 import com.example.authenservice.model.VerifyPermission;
 import com.example.authenservice.model.VerifyToken;
 import com.example.authenservice.respository.FunctionPermissionRepository;
 import com.example.authenservice.respository.dto.FunctionPermission;
+import com.example.authenservice.service.ApiUserService;
 import com.example.authenservice.service.UserDetailService;
 import com.example.authenservice.service.UserDetailServiceImp;
 import com.example.authenservice.service.UserService;
@@ -51,6 +53,9 @@ public class UserController {
 
     @Inject
     private UserService userService;
+
+    @Autowired
+    private ApiUserService apiUserService;
 
     public UserController(AuthenticationManager authenticationManager, SequenceGeneratorService service, JwtUtils jwtUtils, UserDetailService userDetailService, UserService userService) {
         this.authenticationManager = authenticationManager;
@@ -102,6 +107,11 @@ public class UserController {
     {
         functionPermission.setId(service.generateSequence(FunctionPermission.SEQUENCE_NAME));
         functionPermissionRepository.save(functionPermission);
+    }
+
+    @RequestMapping(value = "createUserBasicAuth", method = RequestMethod.POST)
+    public void createUserBasicAuth(@RequestBody ApiUser apiUser) {
+        apiUserService.createUserCallApi(apiUser);
     }
 
 }

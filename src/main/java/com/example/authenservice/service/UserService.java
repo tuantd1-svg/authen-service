@@ -20,6 +20,7 @@ import com.example.queuecommonapi.producer.IQueueProducer;
 import com.google.inject.Inject;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,12 +55,10 @@ public class UserService {
     private IQueueProducer iQueueProducer;
     @Autowired
     private ICurrentUser iCurrentUser;
-
-    @Value("${url.core-service.baseUrl}")
-    private String url;
-
     @Autowired
-    private  WebClient.Builder webClientBuilder;
+    @Qualifier("webClientServiceCoreAccount")
+    private WebClient webClientServiceCoreAccount;
+
     @Resource
     private FunctionPermissionRepository functionPermissionRepository;
 
@@ -79,7 +78,7 @@ public class UserService {
             UserAuth userAuth = userAuthRepository.save(authMapper.map(EUserAuth.ACTIVE, users.getRef()));
 
             RegisterUser registerUser = getRegisterUser(users, userConfig, userRoles, userAuth);
-            return new ResultMessage(ETransactionStatus.SUCCESS.getStatus(), ETransactionStatus.SUCCESS.getMessage(), true, EMessage.EXECUTE, registerUser);
+            return new ResultMessage(ErrorCode.SUCCESS.getCode(), ErrorCode.SUCCESS.getMessage(), true, EMessage.EXECUTE, registerUser);
 
         } catch (FailureException e) {
             return new ResultMessage(e.getErrorCode().getCode(), e.getErrorCode().getMessage(), false, EMessage.INTERNAL_ERROR);
@@ -114,7 +113,6 @@ public class UserService {
                 verifyPermission.setVerifyRole(EPermission.URI_NOT_ROLE);
                 return verifyPermission;
             }
-
             Set<ERole> roles = functionPermission.getRole();
             Set<ERole> roleUser = iCurrentUser.getRole();
             if (roles == null || roles.isEmpty()) {
@@ -136,6 +134,6 @@ public class UserService {
     }
 
     public ResultMessage verifyUser(UserLogin userLogin) {
-        return webClientBuilder.baseUrl(url).build().post().uri("/api/verifyUserLogin").body(Mono.just(userLogin), UserLogin.class).retrieve().bodyToMono(ResultMessage.class).block();
+        return webClientServiceCoreAccount.post().uri("/api/verifyUserLogin").body(Mono.just(userLogin), UserLogin.class).retrieve().bodyToMono(ResultMessage.class).block();
     }
 }

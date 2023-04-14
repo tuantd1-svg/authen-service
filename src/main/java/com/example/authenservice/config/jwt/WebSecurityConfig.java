@@ -1,5 +1,6 @@
 package com.example.authenservice.config.jwt;
 
+import com.example.authenservice.config.basicAuth.BasicAuthFilter;
 import com.example.authenservice.service.UserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
+    @Bean
+    public BasicAuthFilter basicAuthFilter() {
+        return new BasicAuthFilter();
+    }
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailService).passwordEncoder(passwordEncoder());
@@ -51,11 +56,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
-                .authorizeRequests().antMatchers("/user/login","/actuator/health","/swagger-resources/**","/swagger-ui.html**","/webjars/**","favicon.ico","/swagger-ui/**","/v2/api-docs/**").permitAll()
+                .authorizeRequests().antMatchers("/user/login","/user/createUserBasicAuth","/actuator/health","/swagger-resources/**","/swagger-ui.html**","/webjars/**","favicon.ico","/swagger-ui/**","/v2/api-docs/**").permitAll()
                 .anyRequest().authenticated().and().
                 exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(basicAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }
 }
